@@ -9,6 +9,14 @@ require("dotenv").config();
 
 routes.get("/", async (req, res, next) => {
   try {
+    res.json("Ping Successful").status(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+routes.get("/", async (req, res, next) => {
+  try {
     const URL = req.query.url;
     if (
       validUrl.isUri(URL) &&
@@ -39,7 +47,7 @@ routes.get("/", async (req, res, next) => {
               case "AMAZON":
               case "MYNTRA":
                 response = await axios.get(
-                  `${process.env.PROD_DOMAIN}?url=${URL}`
+                  `${process.env.PROD_DOMAIN}/getDetails?url=${URL}`
                 );
                 break;
               default:
