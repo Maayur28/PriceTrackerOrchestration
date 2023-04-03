@@ -15,7 +15,7 @@ routes.get("/", async (req, res, next) => {
   }
 });
 
-routes.get("/", async (req, res, next) => {
+routes.get("/scrap", async (req, res, next) => {
   try {
     const URL = req.query.url;
     if (
@@ -46,6 +46,7 @@ routes.get("/", async (req, res, next) => {
             switch (domain) {
               case "AMAZON":
               case "MYNTRA":
+              case "FLIPKART":
                 response = await axios.get(
                   `${process.env.PROD_DOMAIN}/getDetails?url=${URL}`
                 );
