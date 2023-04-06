@@ -42,19 +42,23 @@ routes.get("/scrap", async (req, res, next) => {
               throw err;
             }
 
-            let response = null;
+            let data = {};
             switch (domain) {
               case "AMAZON":
-              case "MYNTRA":
               case "FLIPKART":
-                response = await axios.get(
-                  `${process.env.PROD_DOMAIN}/getDetails?url=${URL}`
-                );
+                const [response, priceHistory] = await Promise.all([
+                  axios.get(`${process.env.PROD_DOMAIN}/getDetails?url=${URL}`),
+                  axios.get(
+                    `${process.env.PROD_DOMAIN}/getPriceHistory?url=${URL}`
+                  ),
+                ]);
+                data.data = response.data;
+                data.priceHistory = priceHistory.data.data;
                 break;
               default:
                 break;
             }
-            res.send(response.data).status(200);
+            res.send({ response: data }).status(200);
           } else {
             let err = new Error();
             err.message = "The url/link provided is dead";
