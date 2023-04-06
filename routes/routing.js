@@ -1,7 +1,6 @@
 const express = require("express");
 const routes = express.Router();
 const validUrl = require("valid-url");
-const linkCheck = require("link-check");
 const axios = require("axios");
 const service = require("../service/service");
 
@@ -23,52 +22,37 @@ routes.get("/scrap", async (req, res, next) => {
       validUrl.isWebUri(URL) &&
       validUrl.isHttpsUri(URL)
     ) {
-      linkCheck(URL, async function (err, result) {
-        try {
-          if (err) {
-            let err = new Error();
-            err.message = "The url/link provided is not available";
-            err.status = 404;
-            throw err;
-          }
-          if (result.status == "alive") {
-            let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
-            if (domain != null || domain != undefined || domain != "") {
-              domain = domain.toUpperCase();
-            } else {
-              let err = new Error();
-              err.message = "The url/link provided is invalid";
-              err.status = 403;
-              throw err;
-            }
-
-            let data = {};
-            switch (domain) {
-              case "AMAZON":
-              case "FLIPKART":
-                const [response, priceHistory] = await Promise.all([
-                  axios.get(`${process.env.PROD_DOMAIN}/getDetails?url=${URL}`),
-                  axios.get(
-                    `${process.env.PROD_DOMAIN}/getPriceHistory?url=${URL}`
-                  ),
-                ]);
-                data.data = response.data;
-                data.priceHistory = priceHistory.data.data;
-                break;
-              default:
-                break;
-            }
-            res.send({ response: data }).status(200);
-          } else {
-            let err = new Error();
-            err.message = "The url/link provided is dead";
-            err.status = 400;
-            throw err;
-          }
-        } catch (error) {
-          next(error);
+      try {
+        let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+        if (domain != null || domain != undefined || domain != "") {
+          domain = domain.toUpperCase();
+        } else {
+          let err = new Error();
+          err.message = "The url/link provided is invalid";
+          err.status = 403;
+          throw err;
         }
-      });
+
+        let data = {};
+        switch (domain) {
+          case "AMAZON":
+          case "FLIPKART":
+            const [response, priceHistory] = await Promise.all([
+              axios.get(`${process.env.PROD_DOMAIN}/getDetails?url=${URL}`),
+              axios.get(
+                `${process.env.PROD_DOMAIN}/getPriceHistory?url=${URL}`
+              ),
+            ]);
+            data.data = response.data;
+            data.priceHistory = priceHistory.data.data;
+            break;
+          default:
+            break;
+        }
+        res.send({ response: data }).status(200);
+      } catch (error) {
+        next(error);
+      }
     } else {
       let err = new Error();
       err.message = "The url/link provided is invalid";
