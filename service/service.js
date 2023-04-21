@@ -24,7 +24,7 @@ service.getTracker = async (body, page, limit, sortBy, filter) => {
 
 service.updateTracker = async (body, page, limit, sortBy, filter) => {
   let productList = null;
-  productList = await axios.post(
+  productList = await axios.put(
     `${process.env.AUTH_DOMAIN}/updatetracker`,
     body,
     {
@@ -44,7 +44,7 @@ service.updateTracker = async (body, page, limit, sortBy, filter) => {
 
 service.deleteTracker = async (body, page, limit, sortBy, filter) => {
   let productList = null;
-  productList = await axios.post(
+  productList = await axios.put(
     `${process.env.AUTH_DOMAIN}/deletetracker`,
     body,
     {
