@@ -115,7 +115,7 @@ util.contructResponse = (
   page,
   limit,
   sortBy,
-  filterString
+  filterQuery
 ) => {
   let trackerResponse = {};
   if (
@@ -155,7 +155,7 @@ util.contructResponse = (
       }
       productData.push(obj);
     });
-    productData = productData.filter((obj) => filterData(obj, filterString));
+    productData = productData.filter((obj) => filterData(obj, filterQuery));
     productData = sortData(productData, sortBy);
     let totalCount = productData.length;
     productData = doPagination(productData, page, limit);
@@ -163,7 +163,7 @@ util.contructResponse = (
     trackerResponse.filterCount = totalCount;
     trackerResponse.totalCount = totalTrackers;
     trackerResponse.sortBy = sortBy;
-    trackerResponse.filter = filterString;
+    trackerResponse.filterQuery = filterQuery;
     trackerResponse.data = productData;
   }
   return trackerResponse;
