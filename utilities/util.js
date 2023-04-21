@@ -1,5 +1,5 @@
+const axios = require("axios");
 let util = {};
-
 util.shortentURL = (URL) => {
   let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
   if (domain != null || domain != undefined || domain != "") {
@@ -109,7 +109,7 @@ const doPagination = (productData, page, limit) => {
   return productData;
 };
 
-util.contructResponse = (
+const contructResponse = (
   productList,
   priceHistory,
   page,
@@ -174,6 +174,59 @@ util.contructResponse = (
   trackerResponse.sortBy = sortBy;
   trackerResponse.filterQuery = filterQuery;
   trackerResponse.data = productData;
+  return trackerResponse;
+};
+
+util.contructTrackerResponse = async (
+  productList,
+  page,
+  limit,
+  sortBy,
+  filter
+) => {
+  let priceHistory = null,
+    trackerResponse = null;
+  if (
+    productList != null &&
+    productList.status == 200 &&
+    productList.data != null &&
+    productList.data !== undefined &&
+    productList.data.data != null &&
+    productList.data.data !== undefined &&
+    productList.data.data.products != null &&
+    productList.data.data.products !== undefined &&
+    productList.data.data.products.length > 0
+  ) {
+    productList = productList.data.data.products;
+    urlList = util.getUrlsList(productList);
+    const urlsResponse = await axios.post(
+      `${process.env.PROD_DOMAIN}/getPriceHistoryUrls`,
+      urlList,
+      {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    );
+    if (
+      urlsResponse.status === 200 &&
+      urlsResponse.data != null &&
+      urlsResponse.data !== undefined &&
+      urlsResponse.data !== "" &&
+      urlsResponse.data.data != null &&
+      urlsResponse.data.data !== undefined
+    ) {
+      priceHistory = urlsResponse.data.data;
+    }
+    trackerResponse = contructResponse(
+      productList,
+      priceHistory,
+      page,
+      limit,
+      sortBy,
+      filter
+    );
+  }
   return trackerResponse;
 };
 

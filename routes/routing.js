@@ -95,4 +95,46 @@ routes.post("/gettracker", async (req, res, next) => {
   }
 });
 
+routes.put("/updatetracker", async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 5,
+      filter = "",
+      sortBy = "Relevance",
+    } = req.query;
+    let data = await service.updateTracker(
+      req.body,
+      page,
+      limit,
+      sortBy,
+      filter
+    );
+    res.json({ data: data }).status(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+routes.put("/deletetracker", async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 5,
+      filter = "",
+      sortBy = "Relevance",
+    } = req.query;
+    let data = await service.deleteTracker(
+      req.body,
+      page,
+      limit,
+      sortBy,
+      filter
+    );
+    res.json({ data: data }).status(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = routes;
