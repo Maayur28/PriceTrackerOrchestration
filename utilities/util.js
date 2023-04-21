@@ -50,8 +50,8 @@ const filterData = (obj, filter) => {
   if (
     filter == null ||
     filter == undefined ||
-    Object.keys(filter).length < 4 ||
-    Object.keys(filter).length > 4
+    Object.keys(filter).length < 3 ||
+    Object.keys(filter).length > 3
   ) {
     return true;
   } else {
@@ -59,12 +59,7 @@ const filterData = (obj, filter) => {
       filter["company"] == "" ||
       obj.domain.toLowerCase().includes(filter["company"])
     ) {
-      if (
-        filter["curPrice"][0] == 0 ||
-        filter["curPrice"][1] == 0 ||
-        (parseInt(filter["curPrice"][0]) <= parseInt(obj.currentPrice) &&
-          parseInt(filter["curPrice"][1]) >= parseInt(obj.currentPrice))
-      ) {
+      {
         if (
           filter["priceDropped"] == "" ||
           filter["priceDropped"] == "false" ||
@@ -82,8 +77,6 @@ const filterData = (obj, filter) => {
         } else {
           return false;
         }
-      } else {
-        return false;
       }
     } else {
       return false;
@@ -198,14 +191,6 @@ const contructResponse = (
       productData.push(obj);
     });
     productData = productData.filter((obj) => filterData(obj, filterQuery));
-    productData.forEach((element) => {
-      if (filterPrice[0] > element.currentPrice) {
-        filterPrice[0] = element.currentPrice;
-      }
-      if (filterPrice[1] < element.currentPrice) {
-        filterPrice[1] = element.currentPrice;
-      }
-    });
     productData = sortData(productData, sortBy);
     filterCount = parseInt(productData.length);
     productData = doPagination(productData, page, limit);
@@ -217,12 +202,6 @@ const contructResponse = (
   trackerResponse.filterCount = filterCount;
   trackerResponse.totalCount = totalCount;
   trackerResponse.sortBy = sortBy;
-  if (filterQuery["curPrice"][0] == 0 || filterQuery["curPrice"][1] == 0) {
-    filterQuery["curPrice"] = filterPrice;
-  } else {
-    trackerResponse.filterQuery = filterQuery;
-  }
-  trackerResponse.filterPrice = filterPrice;
   trackerResponse.filterQuery = filterQuery;
   trackerResponse.data = productData;
   return trackerResponse;
