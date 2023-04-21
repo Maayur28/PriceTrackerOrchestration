@@ -2,8 +2,10 @@ let service = {};
 const axios = require("axios");
 const util = require("../utilities/util");
 
-service.getTracker = async (body, page, limit, sortBy, filter) => {
+service.getTracker = async (body, page, limit, sortBy) => {
   let productList = null;
+  let filter = body["filter"];
+  delete body["filter"];
   productList = await axios.post(
     `${process.env.AUTH_DOMAIN}/gettracker`,
     body,
@@ -22,8 +24,10 @@ service.getTracker = async (body, page, limit, sortBy, filter) => {
   );
 };
 
-service.updateTracker = async (body, page, limit, sortBy, filter) => {
+service.updateTracker = async (body, page, limit, sortBy) => {
   let productList = null;
+  let filter = body["filter"];
+  delete body["filter"];
   productList = await axios.put(
     `${process.env.AUTH_DOMAIN}/updatetracker`,
     body,
@@ -42,8 +46,10 @@ service.updateTracker = async (body, page, limit, sortBy, filter) => {
   );
 };
 
-service.deleteTracker = async (body, page, limit, sortBy, filter) => {
+service.deleteTracker = async (body, page, limit, sortBy) => {
   let productList = null;
+  let filter = body["filter"];
+  delete body["filter"];
   productList = await axios.put(
     `${process.env.AUTH_DOMAIN}/deletetracker`,
     body,

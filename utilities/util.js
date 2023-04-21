@@ -50,27 +50,63 @@ const filterData = (obj, filter) => {
   if (
     filter == null ||
     filter == undefined ||
-    filter.trim() == "" ||
-    filter.trim().length == 0
+    Object.keys(filter).length < 4 ||
+    Object.keys(filter).length > 4
   ) {
     return true;
   } else {
-    filter = filter.toLowerCase();
     if (
-      obj.title.toLowerCase().includes(filter) ||
-      obj.domain.toLowerCase().includes(filter) ||
-      obj.price.discountPrice.toLowerCase().includes(filter) ||
-      obj.price.originalPrice.toLowerCase().includes(filter) ||
-      obj.rating.ratingCount.toLowerCase().includes(filter) ||
-      obj.rating.totalRated.toLowerCase().includes(filter) ||
-      obj.alertPrice == filter ||
-      obj.minimumPrice == filter ||
-      obj.currentPrice == filter ||
-      obj.maximumPrice == filter
+      filter["company"] == "" ||
+      obj.domain.toLowerCase().includes(filter["company"])
     ) {
-      return true;
-    } else return false;
+      if (
+        filter["curPrice"][0] == 0 ||
+        filter["curPrice"][1] == 0 ||
+        (parseInt(filter["curPrice"][0]) <= parseInt(obj.currentPrice) &&
+          parseInt(filter["curPrice"][1]) >= parseInt(obj.currentPrice))
+      ) {
+        if (
+          filter["priceDropped"] == "" ||
+          filter["priceDropped"] == "false" ||
+          (filter["priceDropped"] == true && obj.priceDrop > 0)
+        ) {
+          if (
+            filter["search"] == "" ||
+            filter["search"].trim() == "" ||
+            validateSearchFilter(filter["search"], obj)
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
+};
+
+const validateSearchFilter = (filter, obj) => {
+  filter = filter.toLowerCase();
+  if (
+    obj.title.toLowerCase().includes(filter) ||
+    obj.domain.toLowerCase().includes(filter) ||
+    obj.price.discountPrice.toLowerCase().includes(filter) ||
+    obj.price.originalPrice.toLowerCase().includes(filter) ||
+    obj.rating.ratingCount.toLowerCase().includes(filter) ||
+    obj.rating.totalRated.toLowerCase().includes(filter) ||
+    obj.alertPrice == filter ||
+    obj.minimumPrice == filter ||
+    obj.currentPrice == filter ||
+    obj.maximumPrice == filter
+  ) {
+    return true;
+  } else return false;
 };
 
 const sortData = (productData, value) => {
@@ -88,7 +124,7 @@ const sortData = (productData, value) => {
       productData.sort((a, b) => b.currentPrice - a.currentPrice);
       return productData;
     } else if (value === "MPD") {
-      productData.sort((a, b) => a.priceDrop - b.priceDrop);
+      productData.sort((a, b) => b.priceDrop - a.priceDrop);
       return productData;
     } else return productData;
   } else {
@@ -124,6 +160,7 @@ const contructResponse = (
   let count = 0;
   let totalCount = 0;
   let filterCount = 0;
+  let filterPrice = [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
   if (
     productList != null &&
     productList != undefined &&
@@ -156,7 +193,13 @@ const contructResponse = (
         obj.maximumPrice = priceHistory.find((x) =>
           data.url.includes(x.url)
         ).maximumPrice;
-        obj.priceDrop = obj.currentPrice - obj.price.discountPrice;
+        obj.priceDrop = obj.price.discountPrice - obj.currentPrice;
+        if (filterPrice[0] > obj.currentPrice) {
+          filterPrice[0] = obj.currentPrice;
+        }
+        if (filterPrice[1] < obj.currentPrice) {
+          filterPrice[1] = obj.currentPrice;
+        }
       }
       productData.push(obj);
     });
@@ -173,6 +216,7 @@ const contructResponse = (
   trackerResponse.totalCount = totalCount;
   trackerResponse.sortBy = sortBy;
   trackerResponse.filterQuery = filterQuery;
+  trackerResponse.filterPrice = filterPrice;
   trackerResponse.data = productData;
   return trackerResponse;
 };

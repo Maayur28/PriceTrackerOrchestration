@@ -82,13 +82,8 @@ routes.get(`/${process.env.ORCH_ROUTE}`, async (req, res, next) => {
 
 routes.post("/gettracker", async (req, res, next) => {
   try {
-    const {
-      page = 1,
-      limit = 5,
-      filter = "",
-      sortBy = "Relevance",
-    } = req.query;
-    let data = await service.getTracker(req.body, page, limit, sortBy, filter);
+    const { page = 1, limit = 5, sortBy = "Relevance" } = req.query;
+    let data = await service.getTracker(req.body, page, limit, sortBy);
     res.json({ data: data }).status(200);
   } catch (error) {
     next(error);
@@ -97,19 +92,8 @@ routes.post("/gettracker", async (req, res, next) => {
 
 routes.put("/updatetracker", async (req, res, next) => {
   try {
-    const {
-      page = 1,
-      limit = 5,
-      filter = "",
-      sortBy = "Relevance",
-    } = req.query;
-    let data = await service.updateTracker(
-      req.body,
-      page,
-      limit,
-      sortBy,
-      filter
-    );
+    const { page = 1, limit = 5, sortBy = "Relevance" } = req.query;
+    let data = await service.updateTracker(req.body, page, limit, sortBy);
     res.json({ data: data }).status(200);
   } catch (error) {
     next(error);
@@ -118,19 +102,8 @@ routes.put("/updatetracker", async (req, res, next) => {
 
 routes.put("/deletetracker", async (req, res, next) => {
   try {
-    const {
-      page = 1,
-      limit = 5,
-      filter = "",
-      sortBy = "Relevance",
-    } = req.query;
-    let data = await service.deleteTracker(
-      req.body,
-      page,
-      limit,
-      sortBy,
-      filter
-    );
+    const { page = 1, limit = 5, sortBy = "Relevance" } = req.query;
+    let data = await service.deleteTracker(req.body, page, limit, sortBy);
     res.json({ data: data }).status(200);
   } catch (error) {
     next(error);
