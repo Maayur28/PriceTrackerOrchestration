@@ -3,6 +3,7 @@ const routes = express.Router();
 const validUrl = require("valid-url");
 const axios = require("axios");
 const util = require("../utilities/util");
+const service = require("../service/service");
 
 require("dotenv").config();
 
@@ -76,6 +77,21 @@ routes.get(`/${process.env.ORCH_ROUTE}`, async (req, res, next) => {
     }
   } catch (e) {
     next(e);
+  }
+});
+
+routes.post("/gettracker", async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 5,
+      filter = "",
+      sortBy = "Relevance",
+    } = req.query;
+    let data = await service.getTracker(req.body, page, limit, sortBy, filter);
+    res.json({ data: data }).status(200);
+  } catch (error) {
+    next(error);
   }
 });
 
