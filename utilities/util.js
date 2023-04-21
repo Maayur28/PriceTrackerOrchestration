@@ -118,6 +118,11 @@ util.contructResponse = (
   filterQuery
 ) => {
   let trackerResponse = {};
+  let productData = [];
+  let currentPage = 0;
+  let currentLimit = 0;
+  let count = 0;
+  let totalCount = 0;
   if (
     productList != null &&
     productList != undefined &&
@@ -132,10 +137,9 @@ util.contructResponse = (
     limit != null &&
     limit != undefined
   ) {
-    trackerResponse.page = page;
-    trackerResponse.limit = limit;
-    let productData = [];
-    let totalTrackers = productList.length;
+    currentPage = parseInt(page);
+    currentLimit = parseInt(limit);
+    totalCount = parseInt(productList.length);
     productList.forEach((data) => {
       let obj = data;
       delete obj["emailSentPrice"];
@@ -157,15 +161,18 @@ util.contructResponse = (
     });
     productData = productData.filter((obj) => filterData(obj, filterQuery));
     productData = sortData(productData, sortBy);
-    let totalCount = productData.length;
+    filterCount = parseInt(productData.length);
     productData = doPagination(productData, page, limit);
-    trackerResponse.count = productData.length;
-    trackerResponse.filterCount = totalCount;
-    trackerResponse.totalCount = totalTrackers;
-    trackerResponse.sortBy = sortBy;
-    trackerResponse.filterQuery = filterQuery;
-    trackerResponse.data = productData;
+    count = parseInt(productData.length);
   }
+  trackerResponse.page = currentPage;
+  trackerResponse.limit = currentLimit;
+  trackerResponse.count = count;
+  trackerResponse.filterCount = filterCount;
+  trackerResponse.totalCount = totalCount;
+  trackerResponse.sortBy = sortBy;
+  trackerResponse.filterQuery = filterQuery;
+  trackerResponse.data = productData;
   return trackerResponse;
 };
 
