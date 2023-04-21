@@ -215,8 +215,13 @@ const contructResponse = (
   trackerResponse.filterCount = filterCount;
   trackerResponse.totalCount = totalCount;
   trackerResponse.sortBy = sortBy;
-  trackerResponse.filterQuery = filterQuery;
+  if (filterQuery["curPrice"][0] == 0 || filterQuery["curPrice"][1] == 0) {
+    filterQuery["curPrice"] = filterPrice;
+  } else {
+    trackerResponse.filterQuery = filterQuery;
+  }
   trackerResponse.filterPrice = filterPrice;
+  trackerResponse.filterQuery = filterQuery;
   trackerResponse.data = productData;
   return trackerResponse;
 };
