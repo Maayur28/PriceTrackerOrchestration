@@ -88,7 +88,7 @@ const sortData = (productData, value) => {
       productData.sort((a, b) => b.currentPrice - a.currentPrice);
       return productData;
     } else if (value === "MPD") {
-      productData.sort((a, b) => b.priceDrop - a.priceDrop);
+      productData.sort((a, b) => a.priceDrop - b.priceDrop);
       return productData;
     } else return productData;
   } else {
