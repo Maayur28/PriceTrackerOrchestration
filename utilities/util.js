@@ -138,6 +138,9 @@ util.contructResponse = (
     let totalTrackers = productList.length;
     productList.forEach((data) => {
       let obj = data;
+      delete obj["emailSentPrice"];
+      delete obj["badge"];
+      delete obj["_id"];
       if (priceHistory.find((x) => data.url.includes(x.url))) {
         obj.minimumPrice = priceHistory.find((x) =>
           data.url.includes(x.url)
