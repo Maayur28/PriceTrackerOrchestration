@@ -194,16 +194,18 @@ const contructResponse = (
           data.url.includes(x.url)
         ).maximumPrice;
         obj.priceDrop = obj.price.discountPrice - obj.currentPrice;
-        if (filterPrice[0] > obj.currentPrice) {
-          filterPrice[0] = obj.currentPrice;
-        }
-        if (filterPrice[1] < obj.currentPrice) {
-          filterPrice[1] = obj.currentPrice;
-        }
       }
       productData.push(obj);
     });
     productData = productData.filter((obj) => filterData(obj, filterQuery));
+    productData.forEach((element) => {
+      if (filterPrice[0] > element.currentPrice) {
+        filterPrice[0] = element.currentPrice;
+      }
+      if (filterPrice[1] < element.currentPrice) {
+        filterPrice[1] = element.currentPrice;
+      }
+    });
     productData = sortData(productData, sortBy);
     filterCount = parseInt(productData.length);
     productData = doPagination(productData, page, limit);
