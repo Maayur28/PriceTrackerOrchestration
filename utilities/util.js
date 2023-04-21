@@ -123,6 +123,7 @@ util.contructResponse = (
   let currentLimit = 0;
   let count = 0;
   let totalCount = 0;
+  let filterCount = 0;
   if (
     productList != null &&
     productList != undefined &&
