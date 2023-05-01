@@ -25,6 +25,9 @@ util.shortenAmazonURL = (URL) => {
   if (URL.includes("?pd_rd_w=")) {
     URL = URL.split("?pd_rd_w=")[0];
   }
+  if (URL.includes("?ref_=")) {
+    URL = URL.split("?ref_=")[0];
+  }
   return URL;
 };
 
