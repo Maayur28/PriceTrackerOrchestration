@@ -18,6 +18,14 @@ util.shortentURL = (URL) => {
   return URL;
 };
 
+util.fetchDomain = (URL) => {
+  let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+  if (domain != null || domain != undefined || domain != "") {
+    domain = domain.toUpperCase();
+  }
+  return domain;
+};
+
 util.shortenAmazonURL = (URL) => {
   if (URL.includes("/ref=")) {
     URL = URL.split("/ref=")[0];
@@ -47,6 +55,66 @@ util.getUrlsList = (products) => {
     urls: urlList,
   };
   return urls;
+};
+
+util.getAmazonProductId = (URL) => {
+  let pId = "";
+  if (URL.includes("/ref=")) {
+    URL = URL.split("/ref=")[0];
+  }
+  if (URL.includes("?pd_rd_w=")) {
+    URL = URL.split("?pd_rd_w=")[0];
+  }
+  if (URL.includes("/dp/")) {
+    let startIndex = URL.indexOf("/dp/");
+    let newString = URL.substring(startIndex + 4);
+    let endIndex = newString.indexOf("/");
+    if (endIndex <= 0) {
+      endIndex = newString.indexOf("?");
+    }
+    if (endIndex > 0) {
+      pId = URL.substring(startIndex + 4, endIndex + startIndex + 4);
+    } else {
+      pId = URL.substring(startIndex + 4);
+    }
+  }
+  return pId;
+};
+
+util.getFlipkartProductId = (URL) => {
+  let pId = "";
+  if (URL.includes("?pid=")) {
+    URL = URL.split("?pid=")[0];
+  }
+  if (URL.includes("/p/")) {
+    let startIndex = URL.indexOf("/p/");
+    let newString = URL.substring(startIndex + 3);
+    let endIndex = newString.indexOf("/");
+    if (endIndex <= 0) {
+      endIndex = newString.indexOf("?");
+    }
+    if (endIndex > 0) {
+      pId = URL.substring(startIndex + 3, endIndex + startIndex + 3);
+    } else {
+      pId = URL.substring(startIndex + 3);
+    }
+  }
+  return pId;
+};
+
+util.getProductId = (URL, domain) => {
+  let pId = "";
+  switch (domain) {
+    case "AMAZON":
+      pId = util.getAmazonProductId(URL);
+      break;
+    case "FLIPKART":
+      pId = util.getFlipkartProductId(URL);
+      break;
+    default:
+      break;
+  }
+  return pId;
 };
 
 const filterData = (obj, filter) => {
@@ -179,16 +247,21 @@ const contructResponse = (
       delete obj["emailSentPrice"];
       delete obj["badge"];
       delete obj["_id"];
-      if (priceHistory.find((x) => data.url.includes(x.url))) {
-        obj.minimumPrice = priceHistory.find((x) =>
-          data.url.includes(x.url)
-        ).minimumPrice;
-        obj.currentPrice = priceHistory.find((x) =>
-          data.url.includes(x.url)
-        ).currentPrice;
-        obj.maximumPrice = priceHistory.find((x) =>
-          data.url.includes(x.url)
-        ).maximumPrice;
+      let priceData = priceHistory.find((x) =>
+        data.url.includes(util.getProductId(x.url, util.fetchDomain(x.url)))
+      );
+      if (
+        priceData &&
+        priceData.minimumPrice != null &&
+        priceData.minimumPrice != undefined &&
+        priceData.maximumPrice != null &&
+        priceData.maximumPrice != undefined &&
+        priceData.currentPrice != null &&
+        priceData.currentPrice != undefined
+      ) {
+        obj.minimumPrice = priceData.minimumPrice;
+        obj.currentPrice = priceData.currentPrice;
+        obj.maximumPrice = priceData.maximumPrice;
         obj.priceDrop = obj.price.discountPrice - obj.currentPrice;
       }
       productData.push(obj);
